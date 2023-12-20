@@ -25,10 +25,9 @@ function AddProduct({ navigation}) {
                 amount: amount,
                 price: price,
                 imageURL: imageURL,
-                createAt: date.toJSON(),
+                createdAt: date.toJSON(),
             })
             .then(function (response) {
-                console.log(response);
                 Alert.alert("Thông báo", "Tạo hàng hóa thành công");
                 navigation.goBack();
             })

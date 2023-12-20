@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     FlatList,
     Image,
+    Alert,
 } from 'react-native';
 import {
     ActivityIndicator,
@@ -17,7 +18,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { formatPrice } from '../Home';
 import { formatDate } from '../Home';
 
-function TransactionDetail({ route }) {
+function TransactionDetail({ route, navigation }) {
     const [transaction, setTransaction] = useState('');
     const [idCode, setIdCode] = useState('');
     const [status, setStatus] = useState('');
@@ -55,6 +56,62 @@ function TransactionDetail({ route }) {
             .catch(function (error) {
                 console.log(error);
             });
+    }
+
+    function updateTransaction() {
+        console.log(idCode, status, discount, totalPrice, trade, customer, transaction.createdAt, transaction.products, new Date().toISOString());
+        axios
+            .put(`https://waterstorage.somee.com/api/Transactions/${route.params.id}`, {
+                id: route.params.id,
+                idCode: idCode,
+                status: status,
+                discount: discount,
+                totalPrice: totalPrice,
+                trade: trade,
+                customer: customer,
+                createdAt: transaction.createdAt,
+                updatedAt: new Date().toJSON(),
+                products: transaction.products,
+            })
+            .then(function (response) {
+                Alert.alert('Thông báo', 'Cập nhật thành công');
+                navigation.goBack();
+            })
+            .catch(function (error) {
+                console.log(error);
+                Alert.alert('Lỗi', 'Không thể cập nhật');
+            });
+    }
+
+    function deleteTransaction() {
+        axios
+            .delete(`https://waterstorage.somee.com/api/Transactions/${route.params.id}`)
+            .then(function (response) {
+                Alert.alert('Thông báo', 'Xóa thành công');
+                navigation.goBack();
+            })
+            .catch(function (error) {
+                console.log(error);
+                Alert.alert('Lỗi', 'Không thể xóa');
+            });
+    }
+
+
+    function AlertDelete() {
+        Alert.alert(
+            'Warning',
+            'Bạn có chắc là muốn xóa giao dịch này không? dữ liệu giao dịch này sẽ bị xóa vĩnh viễn.',
+            [
+                {
+                    text: 'Xóa',
+                    onPress: () => deleteTransaction(),
+                },
+                {
+                    text: 'Không xóa',
+                    onPress: () => console.log('Cancel Pressed'),
+                },
+            ],
+        );
     }
 
     const renderProducts = ({ item }) => {
@@ -114,8 +171,7 @@ function TransactionDetail({ route }) {
                         value={status}
                         labelField="label"
                         valueField="value"
-                        disabled={true}
-                        onChange={() => { }}
+                        onChange={() => {setStatus(status)}}
                         containerStyle={{ backgroundColor: '#dce9ef' }}
                         itemContainerStyle={{
                             backgroundColor: 'white',
@@ -189,6 +245,11 @@ function TransactionDetail({ route }) {
                         }}
                         style={{ width: '100%' }}
                     />
+                    <TouchableOpacity style={[styles.button,{backgroundColor:'red'}]} onPress={() => { AlertDelete() }}>
+                        <Text>
+                            <Text style={[styles.text,{color:'white'}]}>Delete</Text>
+                        </Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         )
@@ -213,7 +274,6 @@ const styles = StyleSheet.create({
         elevation: 5,
         paddingHorizontal: 15,
         margin: 10,
-        marginVertical: 15,
         height: 50,
         backgroundColor: '#dce9ef',
     },

@@ -19,6 +19,7 @@ import axios from 'axios';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useIsFocused } from '@react-navigation/native';
 import { formatPrice } from '../Home';
+import { create } from 'react-test-renderer';
 
 function CreateTransaction({ navigation }) {
     const [customers, setCustomers] = useState([]);
@@ -38,7 +39,6 @@ function CreateTransaction({ navigation }) {
     const isFocused = useIsFocused();
 
     function createTransaction() {
-        console.log(idCode, status.value, discount, totalPrice, trade.value, customer, productPost)
         axios
             .post('https://waterstorage.somee.com/api/Transactions', {
                 idCode: idCode,
@@ -46,7 +46,7 @@ function CreateTransaction({ navigation }) {
                 discount: discount,
                 totalPrice: totalPrice,
                 trade: trade.value,
-                createAt: date.toJSON(),
+                createdAt: date.toJSON(),
                 customer: customer,
                 products: productPost,
             })
@@ -130,7 +130,7 @@ function CreateTransaction({ navigation }) {
                     }
                 });
                 setProductPost(newProductPost);
-                setTotalPrice(newtotalPrice);
+                setTotalPrice(newtotalPrice - discount);
                 setIsloadingdata(false);
             } else {
                 setProductPost([]);
@@ -236,7 +236,7 @@ function CreateTransaction({ navigation }) {
                     <TextInput
                         style={styles.inputText}
                         label="Giảm giá"
-                        value='0'
+                        value={discount.toString()}
                         onChangeText={text => setDiscount(text)}
                         mode="outlined"
                         outlineColor="#dce9ef"
@@ -279,7 +279,10 @@ function CreateTransaction({ navigation }) {
                         <Modal
                             visible={visible}
                             onDismiss={hideModal}
-                            contentContainerStyle={styles.modalContainer}>
+                            contentContainerStyle={styles.modalContainer} >
+                            <TouchableOpacity style={styles.button} onPress={hideModal}>
+                                <Text style={{ fontSize: 20, fontWeight: 'bold', alignSelf: 'center', color: 'black' }}>Đóng</Text>
+                            </TouchableOpacity>
                             <FlatList
                                 data={products}
                                 renderItem={renderItem}
@@ -295,7 +298,7 @@ function CreateTransaction({ navigation }) {
                     </Portal>
                     <FlatList
                         data={productPost}
-                        renderItem={({item}) => {
+                        renderItem={({ item }) => {
                             const index = products.findIndex(products => products.id === item.id);
                             if (!isloadingdata) {
                                 return (
@@ -327,8 +330,8 @@ function CreateTransaction({ navigation }) {
                     />
                     <View>
                         <Button>
-                            <Text style={[styles.text, { color: 'red', fontSize:20 }]}>
-                                Tổng số tiền: {formatPrice(totalPrice ? totalPrice : 0)}{' '}
+                            <Text style={[styles.text, { color: 'red', fontSize: 20 }]}>
+                                Tổng số tiền: {formatPrice(totalPrice ? totalPrice : 0  - discount)}{' '}
                                 <Text style={{ textDecorationLine: 'underline' }}>đ</Text>
                             </Text>
                         </Button>

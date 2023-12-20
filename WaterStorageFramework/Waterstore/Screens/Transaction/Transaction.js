@@ -47,7 +47,7 @@ function Transaction({ navigation }) {
                         <Text
                             style={[
                                 styles.text,
-                                { color: status == 'completed' ? 'green' : 'yellow' },
+                                { color: status == 'completed' ? 'green' : 'orange' },
                             ]}>
                             {status == 'completed' ? 'Đã hoàn thành' : 'Chưa hoàn thành'}
                         </Text>

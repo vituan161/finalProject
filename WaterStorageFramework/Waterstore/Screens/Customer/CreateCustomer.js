@@ -17,16 +17,16 @@ function CreateCustomer({ navigation }) {
     const date = new Date();
 
     function createCustomer() {
+        console.log(name, phone, address, date.toJSON(), date.toJSON());
         axios
             .post('https://waterstorage.somee.com/api/Customers', {
                 name: name,
                 phone: phone,
                 address: address,
-                createAt: date.toJSON(),
-                UpdateAt: date.toJSON(),
+                createdAt: date.toJSON(),
+                UpdatedAt: date.toJSON(),
             })
             .then(function (response) {
-                console.log(response);
                 Alert.alert("Thông báo", "Tạo khách hàng thành công");
                 navigation.goBack();
             })

@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, Text, StyleSheet, Alert, Image, TouchableOpacity } from "react-native";
-import { Icon, ActivityIndicator } from "react-native-paper";
+import { Icon, ActivityIndicator,Drawer } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
 import axios from "axios";
 
@@ -13,6 +13,7 @@ function Home({ navigation }) {
     const [transactions, setTransactions] = useState([]);
     const [isloading, setIsloading] = useState(true);
     const date = new Date();
+
 
     const isFocused = useIsFocused();
 
@@ -95,19 +96,21 @@ function Home({ navigation }) {
                 <View style={styles.topcontainer}>
                     <Image
                         style={styles.image}
-                        source={{ uri: 'https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg' }}
+                        source={{ uri: detail.imageUrl ? detail.imageUrl : 'https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg' }}
                     />
                     <Text style={styles.textTitle}>Xin chào {detail.name}</Text>
                     <View style={{ flexDirection: 'row', justifyContent: "space-evenly", alignItems: 'center' }}>
-                        <Text style={[styles.whiteText, { fontSize: 18 }]}>Tháng {date.getMonth() + 1}:</Text>
-                        <TouchableOpacity style={styles.button}>
-                            <Text style={styles.whiteText}>{exit}</Text>
+                        <Text style={[styles.whiteText, { fontSize: 18 }]}>Tháng {date.getMonth() + 1}  </Text>
+                        <View style={styles.button}>
+                            <Text style={styles.whiteText}>Xuất</Text>
                             <Icon source={"package-up"} color="white" size={30} />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.button}>
-                            <Text style={styles.whiteText}>{enter}</Text>
+                            <Text style={styles.whiteText}>: {exit}</Text>
+                        </View>
+                        <View style={styles.button}>
+                            <Text style={styles.whiteText}>Nhập</Text>
                             <Icon source={"package-down"} color="white" size={30} />
-                        </TouchableOpacity>
+                            <Text style={styles.whiteText}>: {enter}</Text>
+                        </View>
                     </View>
                 </View>
                 <View style={styles.bottomcontainer}>
@@ -132,7 +135,7 @@ function Home({ navigation }) {
                         </View>
                         <Icon source={"chevron-right"} color="#54da62" size={35} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.ViewButton} onPress={() => { }}>
+                    <TouchableOpacity style={styles.ViewButton} onPress={() => { navigation.navigate('StatisticScreen') }}>
                         <View style={styles.NavigateButton}>
                             <Icon source={"chart-bar"} color="#3dcf3d" size={35} />
                             <Text style={styles.text}>Thống kê</Text>
@@ -156,13 +159,6 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
     },
     bottomcontainer: {
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 8,
-        },
-        shadowOpacity: 0.46,
-        shadowRadius: 11.14,
         elevation: 2,
         flex: 1,
         backgroundColor: '#f6f6f6',
@@ -171,6 +167,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         borderTopLeftRadius: 20,
         borderTopEndRadius: 20,
+
     },
     whiteText: {
         fontSize: 20,

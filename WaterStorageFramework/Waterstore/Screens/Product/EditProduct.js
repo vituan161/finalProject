@@ -32,7 +32,6 @@ function EditProduct({ route, navigation }) {
     }
 
     function updateProduct() {
-        console.log(name, amount, price, imageURL, new Date().toISOString());
         axios.put('https://waterstorage.somee.com/api/Products/' + id, {
             id: id,
             name: name,

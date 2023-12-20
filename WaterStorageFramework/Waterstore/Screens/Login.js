@@ -4,9 +4,10 @@ import { TextInput, Button } from "react-native-paper";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SharedElement } from 'react-navigation-shared-element';
+import LinearGradient from "react-native-linear-gradient";
 
 function Login({ navigation }) {
-    const [username, setUsername] = useState("Tuan");
+    const [username, setUsername] = useState("tuan");
     const [password, setPassword] = useState("tuan");
     const [hidePass, setHidePass] = useState(true);
     const [userdata, setUserdata] = useState([]);
@@ -81,12 +82,15 @@ function Login({ navigation }) {
                         <TextInput.Icon icon={hidePass ? "eye-off-outline" : "eye-outline"} onPress={() => setHidePass(!hidePass)} />
                     }
                 />
-                <Button
-                    mode="contained"
-                    onPress={() => authentication()}
-                    style={styles.button}>
-                    <Text style={{ color: 'white', fontSize: 18 }}> Login </Text>
-                </Button>
+                <LinearGradient colors={['#48b6e7', '#096bff']}>
+                    <Button
+                        mode="contained"
+                        onPress={() => authentication()}
+                        style={styles.button}>
+
+                        <Text style={{ color: 'white', fontSize: 18 }}> Login </Text>
+                    </Button>
+                </LinearGradient>
             </View>
         </View>
     )
@@ -112,9 +116,13 @@ const styles = StyleSheet.create({
     },
     button: {
         height: 50,
-        backgroundColor: '#48b6e7',
-        borderRadius: 5,
         justifyContent: 'center',
+        margin:0,
+        backgroundColor: 'transparent',
+    },
+    gradient: {
+        flex: 1,
+        borderRadius: 10,
     },
 });
 

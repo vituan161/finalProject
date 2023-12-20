@@ -24,7 +24,7 @@ function EditCustomer({ route, navigation }) {
                 setPhone(response.data.phone);
                 setAddress(response.data.address);
                 setTotalSpent(response.data.totalSpent);
-                setUnclaimed(response.data.unclaimed);
+                setUnclaimed(response.data.unclaimedB);
                 setIsloading(false);
             })
             .catch(function (error) {
@@ -40,7 +40,8 @@ function EditCustomer({ route, navigation }) {
             phone: phone,
             address: address,
             totalSpent: totalSpent,
-            unclaimed: unclaimed,
+            unclaimedB: unclaimed,
+            createdAt: customer.createdAt,
             updatedAt: new Date().toJSON(),
         })
             .then(function (response) {
@@ -68,14 +69,14 @@ function EditCustomer({ route, navigation }) {
     function AlertDelete() {
         Alert.alert(
             'Warning',
-            'Are you sure you want to remove this client? This operation cannot be undone.',
+            'Bạn có chắc là muốn xóa khách hàng này không? dữ liệu của khách hàng này sẽ bị xóa vĩnh viễn.',
             [
                 {
-                    text: 'DELETE',
+                    text: 'Xóa',
                     onPress: () => deleteCustomer(),
                 },
                 {
-                    text: 'CANCEL',
+                    text: 'Không xóa',
                     onPress: () => console.log('Cancel Pressed'),
                 },
             ],
@@ -154,7 +155,7 @@ function EditCustomer({ route, navigation }) {
                     <TextInput
                         style={styles.inputText}
                         label="nợ bình"
-                        value={unclaimed}
+                        value={unclaimed ? unclaimed.toString() : '0'}
                         keyboardType="numeric"
                         onChangeText={text => setUnclaimed(text)}
                         mode='outlined'

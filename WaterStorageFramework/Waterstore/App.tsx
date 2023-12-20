@@ -37,6 +37,7 @@ import EditProduct from './Screens/Product/EditProduct';
 import Transaction from './Screens/Transaction/Transaction';
 import CreateTransaction from './Screens/Transaction/CreateTransaction';
 import TransactionDetail from './Screens/Transaction/TransactionDetail';
+import Statistic from './Screens/Statistic/Statistic';
 
 function App() {
   const [islogin, setIslogin] = useState('');
@@ -64,7 +65,7 @@ function App() {
       <SafeAreaProvider>
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName="HomeScreen"
+            initialRouteName="SplashScreen"
             screenOptions={{
               headerStyle: {
                 backgroundColor: '#096bff',
@@ -165,6 +166,13 @@ function App() {
                 title: 'Chi tiết giao dịch',
               }}
               component={TransactionDetail}
+            />
+            <Stack.Screen
+              name="StatisticScreen"
+              options={{
+                title: 'Thống kê',
+              }}
+              component={Statistic}
             />
           </Stack.Navigator>
         </NavigationContainer>
