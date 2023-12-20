@@ -20,6 +20,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { useIsFocused } from '@react-navigation/native';
 import { formatPrice } from '../Home';
 import { create } from 'react-test-renderer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function CreateTransaction({ navigation }) {
     const [customers, setCustomers] = useState([]);
@@ -35,6 +36,8 @@ function CreateTransaction({ navigation }) {
     const [isloadingdata, setIsloadingdata] = useState(true);
     const date = new Date();
     const [tempNumber, setTempNumber] = useState([]);
+
+    const [color , setColor] = useState('');
 
     const isFocused = useIsFocused();
 
@@ -99,6 +102,17 @@ function CreateTransaction({ navigation }) {
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
 
+    const getColor = async () => {
+        try {
+          const value = await AsyncStorage.getItem('color');
+          if (value !== null) {
+            setColor(value);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => (
@@ -111,6 +125,7 @@ function CreateTransaction({ navigation }) {
                 </TouchableOpacity>
             ),
         });
+        getColor();
     });
 
     useEffect(() => {
@@ -143,7 +158,7 @@ function CreateTransaction({ navigation }) {
         const { amount, imageURL, name, price } = item;
         return (
             <View style={styles.itemContainer}>
-                <View style={styles.ViewButton}>
+                <View style={[styles.ViewButton,{borderColor:color}]}>
                     <Image
                         style={{ width: 70, height: 70 }}
                         source={
@@ -167,7 +182,7 @@ function CreateTransaction({ navigation }) {
                             marginVertical: 15,
                         }}>
                         <Button
-                            style={styles.amountButton}
+                            style={[styles.amountButton,{borderColor:color}]}
                             onPress={() => {
                                 if (tempNumber[index] > 0) {
                                     const newTempNumber = [...tempNumber];
@@ -177,9 +192,9 @@ function CreateTransaction({ navigation }) {
                             }}>
                             -
                         </Button>
-                        <Button style={styles.amountButton}>{tempNumber[index]}</Button>
+                        <Button style={[styles.amountButton,{borderColor:color}]}>{tempNumber[index]}</Button>
                         <Button
-                            style={styles.amountButton}
+                            style={[styles.amountButton,{borderColor:color}]}
                             onPress={() => {
                                 const newTempNumber = [...tempNumber];
                                 newTempNumber[index] = tempNumber[index] + 1;
@@ -191,7 +206,7 @@ function CreateTransaction({ navigation }) {
                     <Text>
                         {' '}
                         {formatPrice(item.price * tempNumber[index])}{' '}
-                        <Text style={{ textDecorationLine: 'underline' }}>đ</Text>
+                        <Text style={{ textDecorationLine: 'underline', }}>đ</Text>
                     </Text>
                 </View>
             </View>
@@ -216,7 +231,7 @@ function CreateTransaction({ navigation }) {
                         onChangeText={text => setIdCode(text)}
                         mode="outlined"
                         outlineColor="#dce9ef"
-                        activeOutlineColor="#096bff"
+                        activeOutlineColor={color}
                     />
                     <Dropdown
                         style={styles.dropdown}
@@ -240,7 +255,7 @@ function CreateTransaction({ navigation }) {
                         onChangeText={text => setDiscount(text)}
                         mode="outlined"
                         outlineColor="#dce9ef"
-                        activeOutlineColor="#096bff"
+                        activeOutlineColor={color}
                     />
                     <Dropdown
                         style={styles.dropdown}
@@ -384,7 +399,6 @@ const styles = StyleSheet.create({
     ViewButton: {
         marginVertical: 10,
         paddingHorizontal: 10,
-        borderColor: '#096bff',
         borderWidth: 2,
         borderRadius: 10,
         height: 90,
@@ -401,7 +415,6 @@ const styles = StyleSheet.create({
     },
     amountButton: {
         borderWidth: 1,
-        borderColor: '#096bff',
         borderRadius: 0,
     },
 });

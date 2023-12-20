@@ -1,9 +1,10 @@
-import { React, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, Text, StyleSheet, Alert, Image, TouchableOpacity } from "react-native";
-import { Icon, ActivityIndicator,Drawer } from "react-native-paper";
+import { Icon, ActivityIndicator, Drawer } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
 import axios from "axios";
+
 
 
 function Home({ navigation }) {
@@ -14,8 +15,19 @@ function Home({ navigation }) {
     const [isloading, setIsloading] = useState(true);
     const date = new Date();
 
+    const [color, setColor] = useState('');
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const isFocused = useIsFocused();
+
+    const storeColor = async (color) => {
+        try {
+            await AsyncStorage.setItem('color', color);
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     function getTransactions() {
         axios
@@ -33,6 +45,10 @@ function Home({ navigation }) {
     }
 
     useEffect(() => {
+        storeColor(color);
+    }, [color]);
+
+    useEffect(() => {
         const task = () => {
             getTransactions();
             getSimplisticatedTransactions();
@@ -41,6 +57,8 @@ function Home({ navigation }) {
     });
 
     useEffect(() => {
+        if (color === '')
+            setColor('#096bff')
         getdetail().then((data) => {
             setDetail(data);
             //AsyncStorage.clear();
@@ -78,16 +96,37 @@ function Home({ navigation }) {
     if (isloading) {
         return (
             <View style={{ paddingTop: 150, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size={90} color="#096bff" />
+                <ActivityIndicator size={90} color={color} />
                 <Text>Loading...</Text>
             </View>
         );
     } else
         return (
-            <View style={{ flex: 1, backgroundColor: '#096bff', }}>
+            <View style={{ flex: 1, backgroundColor: color, }}>
+                {isDrawerOpen && (
+                    <View style={[styles.drawer, { alignItems: 'center' }]}>
+                        <Drawer.Section title="Color">
+                            <Drawer.CollapsedItem
+                                style={[styles.drawerItem, { backgroundColor: 'red' }]}
+                                onPress={() => { setColor('red') }}
+                            />
+                            <Drawer.CollapsedItem
+                                style={{ backgroundColor: '#096bff' }}
+                                onPress={() => { setColor('#096bff') }}
+                            />
+                            <Drawer.CollapsedItem
+                                style={{ backgroundColor: 'black' }}
+                                onPress={() => { setColor('black') }}
+                            />
+                        </Drawer.Section>
+                        <TouchableOpacity onPress={() => { setIsDrawerOpen(false) }}>
+                            <Icon source={"close"} color="black" size={35} />
+                        </TouchableOpacity>
+                    </View>
+                )}
                 <View style={styles.topBar}>
-                    <TouchableOpacity>
-                        <Icon source={"format-list-bulleted"} color="white" size={35} onPress={() => { }} />
+                    <TouchableOpacity onPress={() => { setIsDrawerOpen(true) }}>
+                        <Icon source={"format-list-bulleted"} color="white" size={35} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => { navigation.navigate('SettingScreen') }}>
                         <Icon source={"cog-outline"} color="white" size={35} />
@@ -114,28 +153,28 @@ function Home({ navigation }) {
                     </View>
                 </View>
                 <View style={styles.bottomcontainer}>
-                    <TouchableOpacity style={styles.ViewButton} onPress={() => { navigation.navigate('CustomerScreen') }}>
+                    <TouchableOpacity style={[styles.ViewButton, { borderColor: color }]} onPress={() => { navigation.navigate('CustomerScreen') }}>
                         <View style={styles.NavigateButton}>
                             <Icon source={"account-circle"} color="#096bff" size={35} />
                             <Text style={styles.text}>Khách hàng</Text>
                         </View>
                         <Icon source={"chevron-right"} color="#096bff" size={35} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.ViewButton} onPress={() => { navigation.navigate('ProductScreen') }}>
+                    <TouchableOpacity style={[styles.ViewButton, { borderColor: color }]} onPress={() => { navigation.navigate('ProductScreen') }}>
                         <View style={styles.NavigateButton} >
                             <Icon source={"package"} color="#FFCB00" size={35} />
                             <Text style={styles.text}>Sản Phẩm</Text>
                         </View>
                         <Icon source={"chevron-right"} color="#FFCB00" size={35} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.ViewButton} onPress={() => { navigation.navigate('TransactionScreen') }}>
+                    <TouchableOpacity style={[styles.ViewButton, { borderColor: color }]} onPress={() => { navigation.navigate('TransactionScreen') }}>
                         <View style={styles.NavigateButton}>
                             <Icon source={"cash-multiple"} color="#54da62" size={35} />
                             <Text style={styles.text}>Giao dịch</Text>
                         </View>
                         <Icon source={"chevron-right"} color="#54da62" size={35} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.ViewButton} onPress={() => { navigation.navigate('StatisticScreen') }}>
+                    <TouchableOpacity style={[styles.ViewButton, { borderColor: color }]} onPress={() => { navigation.navigate('StatisticScreen') }}>
                         <View style={styles.NavigateButton}>
                             <Icon source={"chart-bar"} color="#3dcf3d" size={35} />
                             <Text style={styles.text}>Thống kê</Text>
@@ -148,6 +187,19 @@ function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+    drawer: {
+        zIndex: 9999999,
+        elevation: 2,
+        position: 'absolute',
+        backgroundColor: 'white',
+        borderBlockEndColor: 'black',
+        borderWidth: 1,
+        height: '100%',
+    },
+    drawerItem: {
+        height: 50,
+        width: 50,
+    },
     topBar: {
         padding: 10,
         alignItems: 'center',
@@ -201,7 +253,6 @@ const styles = StyleSheet.create({
     },
     ViewButton: {
         paddingHorizontal: 10,
-        borderColor: '#096bff',
         borderWidth: 2,
         borderRadius: 10,
         height: "18%",

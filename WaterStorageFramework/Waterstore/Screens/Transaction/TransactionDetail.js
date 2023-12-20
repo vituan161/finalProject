@@ -17,6 +17,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { useIsFocused } from '@react-navigation/native';
 import { formatPrice } from '../Home';
 import { formatDate } from '../Home';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function TransactionDetail({ route, navigation }) {
     const [transaction, setTransaction] = useState('');
@@ -27,6 +28,7 @@ function TransactionDetail({ route, navigation }) {
     const [trade, setTrade] = useState([]);
     const [customer, setCustomer] = useState('');
     const [isloading, setIsloading] = useState(true);
+    const [color, setColor] = useState('');
 
     const isFocused = useIsFocused();
 
@@ -118,7 +120,7 @@ function TransactionDetail({ route, navigation }) {
         const {  imageURL, name, price } = item;
         return (
             <TouchableOpacity
-                style={styles.ViewButton}
+                style={[styles.ViewButton, {borderColor:color}]}
                 >
                 <Image
                     style={{ width: 70, height: 70 }}
@@ -139,8 +141,20 @@ function TransactionDetail({ route, navigation }) {
         );
     };
 
+    const getColor = async () => {
+        try {
+          const value = await AsyncStorage.getItem('color');
+          if (value !== null) {
+            setColor(value);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
     useEffect(() => {
         if (isFocused) {
+            getColor();
             getTransaction();
         }
     }, [isFocused]);

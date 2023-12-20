@@ -17,6 +17,7 @@ function EditAccount({ navigation }) {
   const [email, setEmail] = useState('');
   const [isloading, setIsloading] = useState(true);
   const isFocused = useIsFocused();
+  const [color, setColor] = useState('');
 
   useEffect(() => {
     getData().then((data) => {
@@ -42,6 +43,17 @@ function EditAccount({ navigation }) {
       .catch(function (error) {
         console.log(error);
       });
+  }
+
+  const getColor = async () => {
+    try {
+      const value = await AsyncStorage.getItem('color');
+      if (value !== null) {
+        setColor(value);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   function updateAccount() {
@@ -82,12 +94,13 @@ function EditAccount({ navigation }) {
         </TouchableOpacity>
       ),
     })
+    getColor();
   });
 
   if (isloading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#096bff" />
+        <ActivityIndicator size="large" color={color} />
         <Text>Loading...</Text>
       </View>
     )
@@ -101,7 +114,7 @@ function EditAccount({ navigation }) {
           onChangeText={text => setName(text)}
           mode='outlined'
           outlineColor='#dce9ef'
-          activeOutlineColor='#096bff'
+          activeOutlineColor={color}
         />
         <TextInput
           style={styles.inputText}
@@ -111,7 +124,7 @@ function EditAccount({ navigation }) {
           onChangeText={text => setEmail(text)}
           mode='outlined'
           outlineColor='#dce9ef'
-          activeOutlineColor='#096bff'
+          activeOutlineColor={color}
         />
       </View>
     )

@@ -9,12 +9,14 @@ import {
 } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function CreateCustomer({ navigation }) {
     const [phone, setPhone] = useState('');
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
     const date = new Date();
+    const [color, setColor] = useState('');
 
     function createCustomer() {
         console.log(name, phone, address, date.toJSON(), date.toJSON());
@@ -36,6 +38,17 @@ function CreateCustomer({ navigation }) {
             });
     }
 
+    const getColor = async () => {
+        try {
+          const value = await AsyncStorage.getItem('color');
+          if (value !== null) {
+            setColor(value);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => (
@@ -48,6 +61,7 @@ function CreateCustomer({ navigation }) {
                 </TouchableOpacity>
             ),
         });
+        getColor();
     });
 
     return (
@@ -59,7 +73,7 @@ function CreateCustomer({ navigation }) {
                     onChangeText={text => setName(text)}
                     mode='outlined'
                     outlineColor='#dce9ef'
-                    activeOutlineColor='#096bff'
+                    activeOutlineColor={color}
                 />
                 <TextInput
                     style={styles.inputText}
@@ -68,7 +82,7 @@ function CreateCustomer({ navigation }) {
                     onChangeText={text => setPhone(text)}
                     mode='outlined'
                     outlineColor='#dce9ef'
-                    activeOutlineColor='#096bff'
+                    activeOutlineColor={color}
                 />
                 <TextInput
                     style={styles.inputText}
@@ -77,7 +91,7 @@ function CreateCustomer({ navigation }) {
                     onChangeText={text => setAddress(text)}
                     mode='outlined'
                     outlineColor='#dce9ef'
-                    activeOutlineColor='#096bff'
+                    activeOutlineColor={color}
                 />
             </View>
         </View>

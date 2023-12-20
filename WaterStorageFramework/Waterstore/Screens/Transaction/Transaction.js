@@ -4,6 +4,7 @@ import { Icon, ActivityIndicator } from 'react-native-paper';
 import axios from 'axios';
 import { useIsFocused } from '@react-navigation/native';
 import { formatPrice } from '../Home';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 keyExtractor = ({ $id }) => $id;
 
@@ -11,6 +12,18 @@ function Transaction({ navigation }) {
     const [transactions, setTransactions] = useState([]);
     const [isloading, setIsloading] = useState(true);
     const isFocused = useIsFocused();
+    const [color, setColor] = useState('');
+
+    const getColor = async () => {
+        try {
+            const value = await AsyncStorage.getItem('color');
+            if (value !== null) {
+                setColor(value);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     function getTransactions() {
         axios
@@ -31,7 +44,7 @@ function Transaction({ navigation }) {
         const { idCode, status, totalPrice, customer } = item;
         return (
             <TouchableOpacity
-                style={styles.ViewButton}
+                style={[styles.ViewButton, {borderColor: color}]}
                 onPress={() => {
                     navigation.navigate('TransactionDetailScreen', { id: item.id });
                 }}>
@@ -54,19 +67,22 @@ function Transaction({ navigation }) {
                     </Text>
                     <Text style={styles.text}>Chi tiêu: {formatPrice(totalPrice)} đ</Text>
                 </View>
-                <Icon source={'chevron-right'} color="#096bff" size={35} />
+                <Icon source={'chevron-right'} color={color} size={35} />
             </TouchableOpacity>
         );
     };
 
     useEffect(() => {
-        if (isFocused) getTransactions();
+        if (isFocused) {
+            getTransactions();
+            getColor();
+        }
     }, [isFocused]);
 
     if (isloading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#096bff" />
+                <ActivityIndicator size="large" color={color} />
                 <Text>Loading...</Text>
             </View>
         );
@@ -74,12 +90,12 @@ function Transaction({ navigation }) {
         return (
             <View style={styles.container}>
                 <TouchableOpacity
-                    style={[styles.ViewButton, { borderStyle: 'dashed' }]}
+                    style={[styles.ViewButton, { borderStyle: 'dashed', borderColor: color }]}
                     onPress={() => {
                         navigation.navigate('CreateTransactionScreen');
                     }}>
                     <View style={[styles.NavigateButton, { alignItems: 'center' }]}>
-                        <Icon source={'plus'} color="black" size={35} />
+                        <Icon source={'plus'} color={color} size={35} />
                         <Text style={styles.text}>Thêm giao dịch</Text>
                     </View>
                 </TouchableOpacity>
@@ -112,7 +128,6 @@ const styles = StyleSheet.create({
     ViewButton: {
         marginVertical: 10,
         paddingHorizontal: 10,
-        borderColor: '#096bff',
         borderWidth: 2,
         borderRadius: 10,
         height: 90,

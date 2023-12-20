@@ -1,12 +1,11 @@
 import { React, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
 import { BarChart, Grid, YAxis, XAxis } from 'react-native-svg-charts';
 import axios from 'axios';
 import { Button, Icon, DataTable } from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
 import { formatPrice } from '../Home';
-import { Rect } from 'react-native-svg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Statistic({ navigation }) {
     const [transactions, setTransactions] = useState([]);
@@ -15,6 +14,7 @@ function Statistic({ navigation }) {
     const [openFrom, setOpenFrom] = useState(false);
     const [openTo, setOpenTo] = useState(false);
     const [isloading, setIsloading] = useState(true);
+    const [color, setColor] = useState('');
 
     const [data, setData] = useState([]);
 
@@ -50,7 +50,19 @@ function Statistic({ navigation }) {
         setData(tempData);
     }
 
+    const getColor = async () => {
+        try {
+          const value = await AsyncStorage.getItem('color');
+          if (value !== null) {
+            setColor(value);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
     useEffect(() => {
+        getColor();
         getTransactionsByTrade();
     }, [transactions]);
 
@@ -65,7 +77,7 @@ function Statistic({ navigation }) {
         <View style={styles.container}>
             <View style={styles.datePicker}>
                 <Button
-                    style={styles.buttonDate}
+                    style={[styles.buttonDate,{borderColor:color}]}
                     onPress={() => {
                         setOpenFrom(true);
                     }}>
@@ -94,7 +106,7 @@ function Statistic({ navigation }) {
                     }}
                 />
                 <Button
-                    style={styles.buttonDate}
+                    style={[styles.buttonDate,{borderColor:color}]}
                     onPress={() => {
                         setOpenTo(true);
                     }}>
@@ -151,7 +163,7 @@ function Statistic({ navigation }) {
                                     animated={true}
                                     numberOfTicks={10}
                                     contentInset={{ top: 20, bottom: 20 }}
-                                    svg={{ fill: '#096bff' }}>
+                                    svg={{ fill: color }}>
                                     <Grid />
                                 </BarChart>
                             </View>
@@ -207,7 +219,6 @@ const styles = StyleSheet.create({
         margin: 10,
         borderRadius: 10,
         backgroundColor: '#dce9ef',
-        borderColor: '#096bff',
         borderWidth: 1,
         alignItems: 'center',
     },

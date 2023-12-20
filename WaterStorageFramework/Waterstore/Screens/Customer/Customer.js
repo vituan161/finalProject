@@ -5,6 +5,7 @@ import axios from "axios";
 import { useIsFocused } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { formatPrice } from "../Home";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 keyExtractor = ({ id }) => id;
 
@@ -12,6 +13,7 @@ function Customer({ navigation }) {
     const [customers, setCustomers] = useState([]);
     const [isloading, setIsloading] = useState(true);
     const isFocused = useIsFocused();
+    const [color, setColor] = useState('');
 
     const Stack = createNativeStackNavigator();
 
@@ -27,36 +29,49 @@ function Customer({ navigation }) {
             });
     }
 
+    const getColor = async () => {
+        try {
+            const value = await AsyncStorage.getItem('color');
+            if (value !== null) {
+                setColor(value);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     const renderCustomers = ({ item }) => {
-        const { name, address,totalSpent } = item;
+        const { name, address, totalSpent } = item;
         return (
-            <TouchableOpacity style={styles.ViewButton} onPress={() => { navigation.navigate('EditCustomerScreen', { id:item.id }) }}>
+            <TouchableOpacity style={[styles.ViewButton,{borderColor:color}]} onPress={() => { navigation.navigate('EditCustomerScreen', { id: item.id }) }}>
                 <View style={[styles.NavigateButton, { flexDirection: "column" }]}>
                     <Text style={styles.text}>{name}</Text>
                     <Text style={styles.text}>Chi tiêu: {formatPrice(totalSpent)}</Text>
                 </View>
-                <Icon source={"chevron-right"} color="#096bff" size={35} />
+                <Icon source={"chevron-right"} color={color} size={35} />
             </TouchableOpacity>
         );
     }
 
     useEffect(() => {
-        if (isFocused)
+        if (isFocused) {
             getCustomers();
+            getColor();
+        }
     }, [isFocused]);
     if (isloading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#096bff" />
+                <ActivityIndicator size="large" color={color} />
                 <Text>Loading...</Text>
             </View>
         )
     } else {
         return (
             <View style={styles.container}>
-                <TouchableOpacity style={[styles.ViewButton, { borderStyle: 'dashed' }]} onPress={() => {navigation.navigate('CreateCustomerScreen')}} >
+                <TouchableOpacity style={[styles.ViewButton, { borderStyle: 'dashed', borderColor:color }]} onPress={() => { navigation.navigate('CreateCustomerScreen') }} >
                     <View style={[styles.NavigateButton, { alignItems: 'center', }]}>
-                        <Icon source={"plus"} color="black" size={35} />
+                        <Icon source={"plus"} color={color} size={35} />
                         <Text style={styles.text}>Thêm khách hàng</Text>
                     </View>
                 </TouchableOpacity>
@@ -86,7 +101,6 @@ const styles = StyleSheet.create({
     ViewButton: {
         marginVertical: 10,
         paddingHorizontal: 10,
-        borderColor: '#096bff',
         borderWidth: 2,
         borderRadius: 10,
         height: 90,

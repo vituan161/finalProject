@@ -12,6 +12,7 @@ import axios from 'axios';
 import { useIsFocused } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { formatPrice } from '../Home';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 keyExtractor = ({ id }) => id;
 
@@ -19,6 +20,7 @@ function Product({ navigation }) {
     const [Products, setProducts] = useState([]);
     const [isloading, setIsloading] = useState(true);
     const isFocused = useIsFocused();
+    const [color, setColor] = useState('');
 
     const Stack = createNativeStackNavigator();
 
@@ -38,7 +40,7 @@ function Product({ navigation }) {
         const { amount, imageURL, name, price } = item;
         return (
             <TouchableOpacity
-                style={styles.ViewButton}
+                style={[styles.ViewButton, { borderColor: color }]}
                 onPress={() => {
                     navigation.navigate('EditProductScreen', { id: item.id });
                 }}>
@@ -56,19 +58,33 @@ function Product({ navigation }) {
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={styles.text}>x{amount}</Text>
-                    <Icon source={'chevron-right'} color="#096bff" size={35} />
+                    <Icon source={'chevron-right'} color={color} size={35} />
                 </View>
             </TouchableOpacity>
         );
     };
 
+    const getColor = async () => {
+        try {
+            const value = await AsyncStorage.getItem('color');
+            if (value !== null) {
+                setColor(value);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     useEffect(() => {
-        if (isFocused) getProducts();
+        if (isFocused) { 
+            getProducts(); 
+            getColor();
+        }
     }, [isFocused]);
     if (isloading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#096bff" />
+                <ActivityIndicator size="large" color={color} />
                 <Text>Loading...</Text>
             </View>
         );
@@ -76,12 +92,12 @@ function Product({ navigation }) {
         return (
             <View style={styles.container}>
                 <TouchableOpacity
-                    style={[styles.ViewButton, { borderStyle: 'dashed' }]}
+                    style={[styles.ViewButton, { borderStyle: 'dashed', borderColor:color }]}
                     onPress={() => {
                         navigation.navigate('AddProductScreen');
                     }}>
                     <View style={[styles.NavigateButton, { alignItems: 'center' }]}>
-                        <Icon source={'plus'} color="black" size={35} />
+                        <Icon source={'plus'} color={color} size={35} />
                         <Text style={styles.text}>Thêm hàng hóa</Text>
                     </View>
                 </TouchableOpacity>
@@ -114,7 +130,6 @@ const styles = StyleSheet.create({
     ViewButton: {
         marginVertical: 10,
         paddingHorizontal: 10,
-        borderColor: '#096bff',
         borderWidth: 2,
         borderRadius: 10,
         height: 90,

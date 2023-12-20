@@ -11,6 +11,7 @@ function Login({ navigation }) {
     const [password, setPassword] = useState("tuan");
     const [hidePass, setHidePass] = useState(true);
     const [userdata, setUserdata] = useState([]);
+    const [color, setColor] = useState('');
 
     function authentication() {
         let state = false;
@@ -28,6 +29,17 @@ function Login({ navigation }) {
             Alert.alert("Thông báo", "Tài khoản hoặc mật khẩu không đúng! Hoặc mạng yếu");
         }
     }
+
+    const getColor = async () => {
+        try {
+          const value = await AsyncStorage.getItem('color');
+          if (value !== null) {
+            setColor(value);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
 
     const storeauser = async (value) => {
         try {
@@ -54,11 +66,15 @@ function Login({ navigation }) {
             .catch(function (error) {
                 console.log(error);
             });
+        getColor();
+        if(color === ''){
+            setColor('#096bff');
+        }
     });
 
     return (
         <View
-            style={{ backgroundColor: '#096bff', flex: 1, justifyContent: 'center' }}>
+            style={{ backgroundColor: color, flex: 1, justifyContent: 'center' }}>
             <View style={styles.container}>
                 <SharedElement id="logo">
                     <Image style={styles.image} source={require('../imageContainer/biwase-v2-new.png')} />

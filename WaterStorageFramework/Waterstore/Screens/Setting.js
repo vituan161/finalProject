@@ -1,7 +1,9 @@
 import { React, useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function Setting({ navigation }) {
+    const [color, setColor] = useState('white');
     const clearAll = async () => {
         try {
             await AsyncStorage.clear();
@@ -10,12 +12,27 @@ function Setting({ navigation }) {
         }
     };
 
+    const getColor = async () => {
+        try {
+            const value = await AsyncStorage.getItem('color');
+            if (value !== null) {
+                setColor(value);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    useEffect(() => {
+        getColor();
+    }, []);
+
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('EditAccountScreen') }}>
+            <TouchableOpacity style={[styles.button,{backgroundColor:color}]} onPress={() => { navigation.navigate('EditAccountScreen') }}>
                 <Text style={styles.text}>Account</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={async () => {
+            <TouchableOpacity style={[styles.button,{backgroundColor:color}]} onPress={async () => {
                 clearAll();
                 navigation.navigate('LoginScreen');
             }}>
@@ -34,7 +51,6 @@ const styles = StyleSheet.create({
     button: {
         width: "70%",
         alignItems: "center",
-        backgroundColor: "#096bff",
         borderRadius: 5,
         padding: 10,
         margin: 10,

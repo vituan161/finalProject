@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function AddProduct({ navigation}) {
     const [name, setName] = useState('');
@@ -16,6 +17,7 @@ function AddProduct({ navigation}) {
     const [price, setPrice] = useState(0);
     const [imageURL, setImageURL] = useState('');
     const date = new Date();
+    const [color, setColor] = useState('');
 
     function createProduct() {
         console.log(name, amount, price, imageURL, date.toJSON());
@@ -37,6 +39,17 @@ function AddProduct({ navigation}) {
             });
     }
 
+    const getColor = async () => {
+        try {
+          const value = await AsyncStorage.getItem('color');
+          if (value !== null) {
+            setColor(value);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => (
@@ -49,6 +62,7 @@ function AddProduct({ navigation}) {
                 </TouchableOpacity>
             ),
         });
+        getColor();
     });
 
     return (
@@ -60,7 +74,7 @@ function AddProduct({ navigation}) {
                     onChangeText={text => setName(text)}
                     mode='outlined'
                     outlineColor='#dce9ef'
-                    activeOutlineColor='#096bff'
+                    activeOutlineColor={color}
                 />
                 <TextInput
                     style={styles.inputText}
