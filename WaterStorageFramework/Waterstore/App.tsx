@@ -39,22 +39,11 @@ import CreateTransaction from './Screens/Transaction/CreateTransaction';
 import TransactionDetail from './Screens/Transaction/TransactionDetail';
 import Statistic from './Screens/Statistic/Statistic';
 
-
 function App() {
-  const [islogin, setIslogin] = useState('');
   const [trigger, setTrigger] = useState(false);
+  const [colorTrigger, setColorTrigger] = useState('');
   const [color, setColor] = useState('');
-
-  const getislogin = async () => {
-    try {
-      const value = await AsyncStorage.getItem('islogin');
-      if (value !== null) {
-        setIslogin(value);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const [temp, setTemp] = useState('');
 
   const getColor = async () => {
     try {
@@ -65,15 +54,14 @@ function App() {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   useEffect(() => {
-    getColor();
-  })
-
-  useEffect(() => {
-    getislogin();
-  }, [trigger]);
+    (async () => {
+      await getColor();
+      setTemp(color);
+    })();
+  }, [colorTrigger, color, temp]);
 
   const Stack = createSharedElementStackNavigator();
 
@@ -84,7 +72,7 @@ function App() {
           initialRouteName="SplashScreen"
           screenOptions={{
             headerStyle: {
-              backgroundColor: color,
+              backgroundColor: colorTrigger? colorTrigger : "#096bff",
             },
             headerTintColor: 'white',
             headerTitleStyle: {
@@ -94,7 +82,9 @@ function App() {
           <Stack.Screen
             name="HomeScreen"
             options={{headerShown: false}}
-            component={Home}
+            component={props => (
+              <Home {...props} setColorTrigger={setColorTrigger} />
+            )}
           />
           <Stack.Screen
             name="SettingScreen"

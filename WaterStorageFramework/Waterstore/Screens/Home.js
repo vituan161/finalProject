@@ -4,10 +4,11 @@ import { View, Text, StyleSheet, Alert, Image, TouchableOpacity } from "react-na
 import { Icon, ActivityIndicator, Drawer } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
 import axios from "axios";
+import Transaction from "./Transaction/Transaction";
 
 
 
-function Home({ navigation }) {
+function Home({ navigation, setColorTrigger }) {
     const [detail, setDetail] = useState('');
     const [enter, setEnter] = useState(0);
     const [exit, setExit] = useState(0);
@@ -56,6 +57,8 @@ function Home({ navigation }) {
         task();
     });
 
+
+
     useEffect(() => {
         if (color === '')
             setColor('#096bff')
@@ -65,10 +68,16 @@ function Home({ navigation }) {
         });
     }, []);
 
+
     const getSimplisticatedTransactions = () => {
+        const month = date.getMonth();
+        let filteredtransactions = transactions.filter(Transaction => {
+            const transactionDate = new Date(Transaction.createdAt);
+            return transactionDate.getMonth() === month
+        });
         let enterCount = 0;
         let exitCount = 0;
-        transactions.forEach((item) => {
+        filteredtransactions.forEach((item) => {
             if (item.trade == 0) {
                 enterCount++;
             } else {
@@ -105,18 +114,18 @@ function Home({ navigation }) {
             <View style={{ flex: 1, backgroundColor: color, }}>
                 {isDrawerOpen && (
                     <View style={[styles.drawer, { alignItems: 'center' }]}>
-                        <Drawer.Section title="Color">
+                        <Drawer.Section title="Đổi Màu">
                             <Drawer.CollapsedItem
                                 style={[styles.drawerItem, { backgroundColor: 'red' }]}
-                                onPress={() => { setColor('red') }}
+                                onPress={() => { setColor('red'); setColorTrigger('red') }}
                             />
                             <Drawer.CollapsedItem
                                 style={{ backgroundColor: '#096bff' }}
-                                onPress={() => { setColor('#096bff') }}
+                                onPress={() => { setColor('#096bff'); setColorTrigger('#096bff') }}
                             />
                             <Drawer.CollapsedItem
                                 style={{ backgroundColor: 'black' }}
-                                onPress={() => { setColor('black') }}
+                                onPress={() => { setColor('black');setColorTrigger('black') }}
                             />
                         </Drawer.Section>
                         <TouchableOpacity onPress={() => { setIsDrawerOpen(false) }}>

@@ -143,7 +143,7 @@ function Statistic({ navigation }) {
                 </View>
             ) : (
                 <View>
-                    <Text style={{ fontSize: 20, fontWeight: 'bold', alignSelf: 'center', color: 'black' }}>SƠ ĐỒ</Text>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', alignSelf: 'center', color: 'black' }}>BIỂU ĐÒ</Text>
                     <View>
                         <View style={styles.graphContainer}>
                             <YAxis

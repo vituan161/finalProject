@@ -7,7 +7,7 @@ import { SharedElement } from 'react-navigation-shared-element';
 import LinearGradient from "react-native-linear-gradient";
 
 function Login({ navigation }) {
-    const [username, setUsername] = useState("tuan");
+    const [username, setUsername] = useState("Nam");
     const [password, setPassword] = useState("tuan");
     const [hidePass, setHidePass] = useState(true);
     const [userdata, setUserdata] = useState([]);

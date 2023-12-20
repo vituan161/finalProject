@@ -38,6 +38,7 @@ function EditAccount({ navigation }) {
         setUser(response.data);
         setName(response.data.name);
         setEmail(response.data.email);
+        setImageURL(response.data.imageUrl);
         setIsloading(false);
       })
       .catch(function (error) {
@@ -62,6 +63,7 @@ function EditAccount({ navigation }) {
       name: name,
       email: email,
       password: user.password,
+      imageUrl: imageURL,
     })
       .then(function (response) {
         Alert.alert("Thông báo", "Cập nhật thành công");
@@ -122,6 +124,15 @@ function EditAccount({ navigation }) {
           value={email}
           keyboardType="numeric"
           onChangeText={text => setEmail(text)}
+          mode='outlined'
+          outlineColor='#dce9ef'
+          activeOutlineColor={color}
+        />
+        <TextInput
+          style={styles.inputText}
+          label="imageURL"
+          value={imageURL}
+          onChangeText={text => setImageURL(text)}
           mode='outlined'
           outlineColor='#dce9ef'
           activeOutlineColor={color}
